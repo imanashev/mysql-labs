@@ -1,0 +1,40 @@
+распаковываем архив, заходим в папку mysql....
+
+инициализация первого сервера
+mkdir data
+./bin/mysqld --initialize-insecure --user=guest --datadir=mydata1 --basedir=.
+
+при инициализации в каталоге data инициализируется набор файлов, необходимых серверу для работы
+
+запуск
+./bin/mysqld --datadir=mydata1 --basedir=.
+будет работать на порту 3306 и сокет mysql.sock
+
+проверка
+./bin/mysqladmin -u root --port=3306 --protocol=tcp ping
+(должен написать mysqld is alive)
+
+остановка
+./bin/mysqladmin -u root --port=3306 --protocol=tcp shutdown
+
+************************************************************************************
+
+инициализация второго сервера
+mkdir data2
+touch sock.1 (если пытаться запустить новый экземпляр на другом порту, он будет пытаться сделать это через тот же самый сокет, нужно создать ему свой)
+./bin/mysqld --initialize-insecure --user=guest --datadir=mydata2 --basedir=.
+
+запуск
+./bin/mysqld --datadir=mydata2 --basedir=. --port=4000 --socket=sock.1
+
+проверка 
+./bin/mysqladmin -u root --port=4000 --protocol=tcp ping
+(должен написать mysqld is alive)
+
+остановка
+./bin/mysqladmin -u root --port=4000 --protocol=tcp shutdown
+
+*************************************************************************************
+
+инициализируем один раз. запускаем оба. проверяем. останавливаем оба.
+для каждого экземпляра свой терминал. и для проверки тоже свой
