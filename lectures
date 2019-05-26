@@ -1,0 +1,158 @@
+Mysql
+
+Основные команды
+    cd mysql
+    mkdir data
+    bin/mysqld --initialize-insecure --user=guest --datadir=data --basedir=. --innodb-use-native-aio=0
+
+    // --innodb-use-native-aio=0 - отключает ассинхронный ввод/вывод
+
+Дополнительные команды
+    bin/mysqld --no-defaults --datadir=data
+    bin/mysql -uroot
+    bin/mysqlshow -uroot
+    bin/mysqladmin -uroot ping
+    bin/mysqladmin -uroot routdown //????
+    bin/console_client
+
+Параметры:
+    исполняемый файл
+    переменные окружения
+    конфигурационный файл
+    параметры командной строки
+
+Структура конфиг файла
+    [Имя Секции]
+    параметры
+    ; комментарий до конца строки
+    # комментарий до конца строки
+    [client]
+    [server]
+    [mysqld]
+    [VERSION]
+    
+
+Настройка конфига 
+    vim ~/myownconfig.cnf
+    [server]
+
+    datadir = /home/{LOGIN}/datadir
+    basedir = /common-file/mysql
+    bind_address = 127.0.0.1
+    port = 3306
+    protocol = {tcp|scoket|memory|pipe}
+    socket = /home/{LOGIN}/mysqlinst.soc
+    general_log = 1
+    general_logfile = {PATH}
+
+    [client]
+    host = 127.0.0.1
+    port = 3306
+    protocol = tcp
+    tcpuser = root
+    default_character_set = utf8
+
+Запуск нескольких инстантсов
+    mysqld --default-file = ~/myinst1.cnf
+    mysqld --default-file = ~/myinst2.cnf
+
+    mysqladmin --default-file = ~/myinst1.cnf ping
+    mysqladmin --default-file = ~/myinst2.cnf ping
+    
+    mysqladmin --default-file = ~/myinst1.cnf shutdown
+    mysqladmin --default-file = ~/myinst2.cnf shutdown
+
+Работа в mysql
+    mysql --default-file = ~/myinst1
+    mysql.user
+        CREATE USER
+        ALTER USER
+        DROP USER
+        \s
+        user()
+        select user()
+
+
+    CREATE TABLE
+    ALTER TABLE
+    DROP TABLE
+    CREATE {SCHEMA | DATABASE}
+    
+    -- create schema my_test_schema
+    -- mysql
+    -- information schema
+    -- perfomance_schema
+    CREATE PROCEDURE
+
+    Пользователи
+        *LOGIN - строка
+        *HOST - шаблон
+        LOGIN@HOST - разные субъекты
+            'login'@'host'
+            login
+            login@host
+            'login@host' - только логин
+            localhost - дефолотный host
+
+Сравнение строк в СУБД:
+    - посимволное сравнение
+    - шаблоны  
+        '.' -> '_'
+        '*' -> '%'
+    - по регулярному выражению
+
+Привелегии:
+    R = {
+        ALL
+        ALL_PRIVILEGES
+        USAGE   -- r = {пустое множество}
+        SELECT
+        INSERT
+        UPDATE
+        ...
+        FILE    -- использование файловых объектов со стороны сервера
+        SUPER   -- специальный административный доступ, который позволяет управлять процессами и правами 
+    }
+
+Уровни привелегий:
+    * Глобальный уровень
+    * Уровень сервера
+    * Уровень схем
+    * Уровень объектов
+    * Уровень столбцов
+
+Синтаксис команд:
+    CREATE USER [IF NOT EXIST]
+        user_name [auth_option] [,username [auth_options],...]
+        REQUIRE [NONE | tls.option]
+
+Для возможности выдавать права: with grand option
+
+=================
+PKI
+
+Генерация самоподписанного сертификата:
+    openssl req -new -x509 -newkey rsa:2048 [dsa:myfile] -keyout cakey.pem -set_serial 1 -days 365 -out cacert.pem
+
+    Common name - роль абонента (dbms_ca_test)
+
+    openssl rsa -in cakey.pem -text -noout
+    
+    openssl x509 -req -in mysql_client_reg.pem -CA cacert.pem -CAkey cakey.pem -days 365 -extfile openssl.cnf -extensions mysql_client -out mysql_client_cert.pem -CAserial ca_serials
+
+    certx509_format:
+        Version 
+        SerialNumber
+        Issuer
+        KeyInfo
+        Subject
+        ExpireDate
+        Key
+        ------
+        SubjectKeyId
+        IssuerKeyId
+        ------
+        Exstensions
+        ------
+        Sign
+
