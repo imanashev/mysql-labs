@@ -8,7 +8,7 @@ echo "Starting 2nd instance"
 ./start-mysql.sh mydata2 4000 sock.2
 
 
-echo ""
+echo "######################################################"
 echo "Check 1st instance"
 ./check-mysql.sh 3306
 
@@ -17,7 +17,7 @@ echo "Check 2nd instance"
 ./check-mysql.sh 4000
 
 
-echo ""
+echo "######################################################"
 echo "Stopping 1st instance"
 ./stop-mysql.sh 3306
 
