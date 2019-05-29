@@ -3,7 +3,7 @@
 DATA_DIR=${1}
 PORT=${2}
 SOCKET=${3}
-MYSQL_HOME_DIR=../mysql/mysql*/
+MYSQL_HOME_DIR=../mysql/mysql/
 
 echo "Creating data dir"
 mkdir -p ${MYSQL_HOME_DIR}/${DATA_DIR}
